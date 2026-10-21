@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SURPRISE! - Story Game</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Fredoka', sans-serif; } </style>
+</head>
+<body class="bg-gradient-to-br from-yellow-400 via-orange-400 to-pink-500 min-h-screen text-gray-800 flex items-center justify-center p-4">
+
+    <div class="w-full max-w-xl bg-white rounded-3xl p-6 shadow-2xl border-4 border-yellow-300">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-4 border-b-2 border-orange-100 pb-3">
+            <div>
+                <span class="bg-pink-500 text-white text-xs font-bold uppercase px-3 py-1 rounded-full">Story 1 🎂</span>
+                <h1 class="text-2xl font-extrabold text-orange-600 mt-1">SURPRISE! Game</h1>
+            </div>
+            <div class="text-right bg-orange-100 px-3 py-1 rounded-xl">
+                <span class="text-xs font-bold text-orange-500">Stars ⭐</span>
+                <div class="text-2xl font-black text-amber-500" id="score">0</div>
+            </div>
+        </div>
+
+        <!-- Quiz Container -->
+        <div id="quiz-box">
+            <div class="flex justify-between items-center text-xs font-bold text-gray-500 mb-2">
+                <span id="q-num" class="text-pink-600">Question 1 of 20</span>
+            </div>
+
+            <div class="mb-4 p-3 rounded-2xl bg-orange-50 border-2 border-orange-200 text-center">
+                <div id="scene-emoji" class="text-5xl mb-1">🎂✏️</div>
+                <div id="scene-title" class="text-sm font-bold text-orange-600">Tom's Surprise</div>
+            </div>
+
+            <div class="bg-pink-50 rounded-2xl p-4 mb-4 border-2 border-pink-200 text-center">
+                <h3 id="q-text" class="text-lg font-bold text-gray-800">Loading...</h3>
+            </div>
+
+            <div id="options-box" class="grid gap-2.5 mb-4"></div>
+            <div id="feedback" class="hidden p-3 rounded-xl mb-3 text-center font-bold text-sm"></div>
+
+            <button id="next-btn" onclick="nextQ()" class="hidden w-full bg-gradient-to-r from-green-400 to-emerald-500 text-white font-extrabold text-lg py-3 rounded-2xl shadow-lg cursor-pointer">
+                Next Question ➡️
+            </button>
+        </div>
+
+        <!-- End Box -->
+        <div id="result-box" class="hidden text-center py-6">
+            <div class="text-6xl mb-3">🎉🎂🎈</div>
+            <h2 class="text-2xl font-black text-orange-600 mb-2">Awesome Job! 🎉</h2>
+            <p class="text-gray-600 font-bold mb-4">You finished all 20 questions!</p>
+            
+            <div class="bg-yellow-100 rounded-2xl p-4 max-w-xs mx-auto mb-6 border-2 border-yellow-300">
+                <span class="text-xs font-bold text-orange-600 uppercase">Your Final Stars</span>
+                <div class="text-3xl font-black text-amber-500 mt-1" id="final-score">0 / 20</div>
+            </div>
+
+            <div class="bg-gradient-to-r from-pink-100 via-orange-100 to-yellow-100 p-4 rounded-2xl border-2 border-orange-300 mb-6 max-w-md mx-auto shadow">
+                <p class="text-orange-700 font-bold text-base mb-1">🌟 Keep Reaching For The Stars! 🌟</p>
+                <p class="text-gray-600 text-xs mb-3">You are going to achieve great success in your learning journey!</p>
+                <div class="border-t border-orange-200 pt-2">
+                    <p class="text-orange-600 font-bold text-xs italic">With my best wishes,</p>
+                    <p class="text-lg font-extrabold text-orange-700 mt-0.5">✨ Mr. Khalil Mohammed ✨</p>
+                </div>
+            </div>
+
+            <button onclick="restart()" class="bg-gradient-to-r from-pink-500 to-orange-500 text-white font-extrabold text-lg px-8 py-3 rounded-2xl shadow-lg cursor-pointer">
+                Play Again 🔄
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        const questions = [
+            { emoji: "🎂🎁", scene: "The Cake", q: "What was on top of Tom's surprise cake?", options: [{ text: "Fruits and apples 🍎", correct: false }, { text: "School tools (pencil, pen, ruler, eraser) ✏️", correct: true }, { text: "Toys 🧸", correct: false }], hint: "It had a pencil, pen, ruler, and eraser!" },
+            { emoji: "👨‍🏫👋", scene: "The Teacher", q: "What is the teacher's name in the story?", options: [{ text: "Mr. White 👨‍🍳", correct: false }, { text: "Mr. Combs ⛏️", correct: false }, { text: "Mr. Jones 👨‍🏫", correct: true }], hint: "The kids said: 'Hello, Mr. Jones!'" },
+            { emoji: "👨‍🏫⭐", scene: "Teacher Praise", q: "What did Mr. Jones call Tom?", options: [{ text: "You are the best student! 🌟", correct: true }, { text: "You are the best driver! 🚗", correct: false }, { text: "You are the best runner! 🏃", correct: false }], hint: "He said: 'You are the best student!'" },
+            { emoji: "🧮🎂", scene: "Math Puzzle", q: "How old is Tom based on the math problem 4 + 2 + 1 + 1?", options: [{ text: "He is 5 years old! 🖐️", correct: false }, { text: "He is 8 years old! 🎂", correct: true }, { text: "He is 10 years old! 🔟", correct: false }], hint: "4 + 2 + 1 + 1 = 8!" },
+            { emoji: "🖊️🎨", scene: "Pen Color", q: "True or False: The pen on the cake is yellow.", options: [{ text: "True 👍", correct: false }, { text: "False (The pen is blue) ❌", correct: true }], hint: "The pen on the cake is blue!" },
+            { emoji: "✏️🎨", scene: "Pencil Color", q: "What color is the pencil on top of the cake?", options: [{ text: "Green 🟢", correct: false }, { text: "Purple 🟣", correct: false }, { text: "Yellow / Orange 🟧", correct: true }], hint: "The pencil is yellow/orange!" },
+            { emoji: "📏📐", scene: "Ruler", q: "Which tool on the cake is used for drawing lines?", options: [{ text: "A ruler 📏", correct: true }, { text: "A ball ⚽", correct: false }, { text: "A spoon 🥄", correct: false }], hint: "There is a ruler on the cake!" },
+            { emoji: "🧼✏️", scene: "Eraser", q: "Which tool on the cake is an eraser?", options: [{ text: "A book 📚", correct: false }, { text: "An eraser 🧼", correct: true }, { text: "A kite 🪁", correct: false }], hint: "An eraser is on the cake!" },
+            { emoji: "➕➕", scene: "Math Symbol", q: "What is the word for the '+' symbol?", options: [{ text: "minus ➖", correct: false }, { text: "equals 🟰", correct: false }, { text: "plus ➕", correct: true }], hint: "The symbol '+' is called 'plus'!" },
+            { emoji: "🎂🎉", scene: "The Cake", q: "Who was the surprise cake for?", options: [{ text: "It was a cake for Tom 🎂", correct: true }, { text: "It was for Mr. Jones 👨‍🏫", correct: false }, { text: "It was for Sally 👧", correct: false }], hint: "They said: 'It's a cake for you!'" },
+            { emoji: "👦👦", scene: "Greeting", q: "What did Tom say when he entered?", options: [{ text: "Goodbye! 👋", correct: false }, { text: "Hello, Mr. Jones! Hello, kids! 👋", correct: true }, { text: "Good night! 🌙", correct: false }], hint: "He greeted the teacher and kids!" },
+            { emoji: "🥳❤️", scene: "Lesson Value", q: "What should we do on special days?", options: [{ text: "Stay home alone 🏠", correct: false }, { text: "Sleep all day 💤", correct: false }, { text: "Celebrate special days with your friends! 🎉", correct: true }], hint: "Celebrate special days with your friends!" },
+            { emoji: "🎂🧁", scene: "Frosting", q: "What color is the frosting on Tom's cake?", options: [{ text: "White and pink 🎂", correct: true }, { text: "Black 🖤", correct: false }, { text: "Green 🟢", correct: false }], hint: "The cake has white and pink frosting!" },
+            { emoji: "🏫🎈", scene: "Location", q: "Where does the story take place?", options: [{ text: "At a park 🌳", correct: false }, { text: "In the classroom 🏫", correct: true }, { text: "At the zoo 🦁", correct: false }], hint: "They are celebrating in the classroom!" },
+            { emoji: "🖊️✏️", scene: "School Items", q: "How many school items were on top of the cake?", options: [{ text: "2 items ✏️🖊️", correct: false }, { text: "4 items ✏️🖊️📏🧼", correct: true }, { text: "10 items 🔟", correct: false }], hint: "4 items: pencil, pen, ruler, and eraser!" },
+            { emoji: "😮🎉", scene: "Exclamation", q: "What word did everyone shout to Tom?", options: [{ text: "SURPRISE! 🎉", correct: true }, { text: "HELP! 🆘", correct: false }, { text: "STOP! 🛑", correct: false }], hint: "The title of the story is 'SURPRISE!'" },
+            { emoji: "👨‍🏫💬", scene: "Mr. Jones", q: "What did Mr. Jones say when Tom came in?", options: [{ text: "'Sit down!' 🪑", correct: false }, { text: "'Hello, Tom!' 👋", correct: true }, { text: "'Where are you?' ❓", correct: false }], hint: "Mr. Jones said: 'Hello, Tom!'" },
+            { emoji: "🧮✏️", scene: "Writing", q: "Where did Tom write his math equation?", options: [{ text: "On the floor 🪵", correct: false }, { text: "On his desk 🪑", correct: false }, { text: "On the board 🏫", correct: true }], hint: "He wrote 4+2+1+1 on the board!" },
+            { emoji: "😄🎂", scene: "Tom's Reaction", q: "How did Tom feel when he saw the cake?", options: [{ text: "Happy and amazed 🤩", correct: true }, { text: "Sad 😢", correct: false }, { text: "Angry 😠", correct: false }], hint: "He smiled and said: 'Wow!'" },
+            { emoji: "🌟👑", scene: "Main Reason", q: "Why did the class give Tom a cake?", options: [{ text: "Because he won a race 🏃", correct: false }, { text: "Because he is the best student 🌟", correct: true }, { text: "By mistake ❌", correct: false }], hint: "They surprised him because he is the best student!" }
+        ];
+
+        let idx = 0, score = 0, locked = false;
+
+        function loadQ() {
+            locked = false;
+            document.getElementById('feedback').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+
+            if(idx >= questions.length) {
+                document.getElementById('quiz-box').classList.add('hidden');
+                document.getElementById('result-box').classList.remove('hidden');
+                document.getElementById('final-score').innerText = `${score} / ${questions.length}`;
+                return;
+            }
+
+            let curr = questions[idx];
+            document.getElementById('q-num').innerText = `Question ${idx + 1} of ${questions.length}`;
+            document.getElementById('q-text').innerText = curr.q;
+            document.getElementById('scene-emoji').innerText = curr.emoji;
+            document.getElementById('scene-title').innerText = curr.scene;
+
+            let box = document.getElementById('options-box');
+            box.innerHTML = '';
+
+            curr.options.forEach((opt) => {
+                let btn = document.createElement('button');
+                btn.className = "w-full text-left p-3.5 rounded-2xl bg-orange-100 hover:bg-orange-200 border-2 border-orange-300 font-bold text-gray-800 cursor-pointer transition flex justify-between items-center shadow-sm";
+                btn.innerHTML = `<span>${opt.text}</span>`;
+                btn.onclick = () => check(opt.correct, btn, curr.hint);
+                box.appendChild(btn);
+            });
+        }
+
+        function check(isCorrect, btn, hint) {
+            if(locked) return;
+            locked = true;
+
+            let fb = document.getElementById('feedback');
+            fb.classList.remove('hidden');
+
+            if(isCorrect) {
+                score++;
+                document.getElementById('score').innerText = score;
+                btn.className = "w-full text-left p-3.5 rounded-2xl bg-green-500 border-2 border-green-600 font-bold text-white shadow-md flex justify-between items-center";
+                btn.innerHTML += `<span>⭐</span>`;
+                fb.className = "p-3 rounded-xl mb-3 text-center font-bold bg-green-100 border-2 border-green-400 text-green-700";
+                fb.innerHTML = `🎉 Correct! ${hint}`;
+            } else {
+                btn.className = "w-full text-left p-3.5 rounded-2xl bg-red-500 border-2 border-red-600 font-bold text-white shadow-md flex justify-between items-center";
+                btn.innerHTML += `<span>❌</span>`;
+                fb.className = "p-3 rounded-xl mb-3 text-center font-bold bg-red-100 border-2 border-red-400 text-red-700";
+                fb.innerHTML = `💡 Hint: ${hint}`;
+            }
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQ() { idx++; loadQ(); }
+        function restart() { idx = 0; score = 0; document.getElementById('score').innerText = 0; document.getElementById('result-box').classList.add('hidden'); document.getElementById('quiz-box').classList.remove('hidden'); loadQ(); }
+
+        loadQ();
+    </script>
+</body>
+</html>
